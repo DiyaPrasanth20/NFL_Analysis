@@ -78,24 +78,24 @@ injury_df_cleaned = injury_df_cleaned[
     ~injury_df_cleaned["report_primary_injury"].isin(values_to_remove)
 ]
 
-print("total rows in injury_df_cleaned: ", len(injury_df_cleaned))
+# print("total rows in injury_df_cleaned: ", len(injury_df_cleaned))
 
 # sanity check:
 # Group by the 'report_primary_injury' column and count occurrences
 primary_injury_counts = injury_df_cleaned["report_primary_injury"].value_counts()
 
 # Print the counts of each unique value in a pretty table format
-print("Counts of Primary Injury Data:")
-print(
-    tabulate(
-        primary_injury_counts.reset_index(),
-        headers=["Primary Injury", "Count"],
-        tablefmt="pretty",
-    )
-)
+# print("Counts of Primary Injury Data:")
+# print(
+#     tabulate(
+#         primary_injury_counts.reset_index(),
+#         headers=["Primary Injury", "Count"],
+#         tablefmt="pretty",
+#     )
+# )
 
 num_columns = play_df.shape[1]
-print("Number of columns in play_df: ", num_columns)
+# print("Number of columns in play_df: ", num_columns)
 column_names = play_df.columns.tolist()
 # print(column_names)
 
@@ -106,6 +106,9 @@ injury_df["date"] = pd.to_datetime(injury_df["date_modified"])
 play_df["date"] = pd.to_datetime(play_df["game_date"])
 injury_df["date"] = injury_df["date"].dt.tz_localize(None)
 play_df["date"] = play_df["date"].dt.tz_localize(None)
+
+# print("INJURY DF DATE AFTER TURNING INTO LOCAL TIME")
+# print(injury_df.date)
 
 plays_with_injuries = play_df[play_df["desc"].str.contains("was injured", na=False)]
 
@@ -118,6 +121,12 @@ injured_players = plays_with_injuries.loc[:, "desc"].str.extract(pattern)
 plays_with_injuries = pd.concat([plays_with_injuries, injured_players], axis=1)
 plays_with_injuries.rename(columns={0: "injured_player"}, inplace=True)
 
+# print("PLAYS WITH INJURIES")
+# print(plays_with_injuries.head())
+
+# print("INJURY DF")
+# print(injury_df)
+
 injuries = []
 for (week, team), group_injury_df in injury_df.groupby(["week", "team"]):
     group_play_df = plays_with_injuries[
@@ -128,7 +137,15 @@ for (week, team), group_injury_df in injury_df.groupby(["week", "team"]):
         )
     ]
 
-    group_injury_df = group_injury_df[group_injury_df.date >= group_play_df.date.max()]
+    # print(group_play_df)
+    # print(group_injury_df.date)
+    # print(group_play_df.date.max())
+
+    # print("NUM OF ROWS FOR GROUP_INJURY_DF BEFORE: ", len(group_injury_df))
+
+    # group_injury_df = group_injury_df[group_injury_df.date >= group_play_df.date.max()]
+
+    # print("NUM OF ROWS FOR GROUP_INJURY_DF AFTER: ", len(group_injury_df))
 
     group_injury_df["first_type"] = group_injury_df["full_name"].apply(first_last_a)
     group_injury_df["second_type"] = group_injury_df["full_name"].apply(first_last_b)
@@ -147,6 +164,11 @@ for (week, team), group_injury_df in injury_df.groupby(["week", "team"]):
         right_on="second_type",
         how="inner",
     )
+
+    # print("X")
+    # print(x)
+    # print("Y")
+    # print(y)
 
     injuries.append(pd.concat([x, y], axis=0, ignore_index=True))
 
