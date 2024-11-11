@@ -59,7 +59,9 @@ injury_df_cleaned = injury_df_cleaned[
     injury_df_cleaned["report_primary_injury"] != "Not injury related - personal matter"
 ]
 
-# List of values to remove based on the provided indices
+# List of values to remove based on the provided indices (for 2024)
+# TODO: Must find a way to find values to remove for each year (maybe use the top 10 based on count)
+
 values_to_remove = [
     "Being evaluated for a concussion",
     "Not injury related - other",
@@ -71,6 +73,7 @@ values_to_remove = [
     "Player was ill this morning. Fully expected to play. No game status.",
     "Not injury related - resting player",
     "Evaluated for a possible head injury and cleared to return.",
+    "gameday concussion protocol evaluation",
 ]
 
 # Remove specified values from the 'report_primary_injury' column
@@ -143,7 +146,7 @@ for (week, team), group_injury_df in injury_df.groupby(["week", "team"]):
 
     # print("NUM OF ROWS FOR GROUP_INJURY_DF BEFORE: ", len(group_injury_df))
 
-    # group_injury_df = group_injury_df[group_injury_df.date >= group_play_df.date.max()]
+    group_injury_df = group_injury_df[group_injury_df.date >= group_play_df.date.max()]
 
     # print("NUM OF ROWS FOR GROUP_INJURY_DF AFTER: ", len(group_injury_df))
 
